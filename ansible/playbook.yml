@@ -82,21 +82,35 @@
         dest: ~/app/nginx.conf
         mode: '0644'
 
-    # Create cert-data directory
-    - name: Create cert-data directory
-      file:
-        path: ~/app/cert-data
-        state: directory
-        mode: '0755'
+# Check if the cert-data directory exists
+- name: Check if cert-data directory exists
+  stat:
+    path: ~/app/cert-data
+  register: cert_data_dir
 
-    # Generate SSL certificates
-    - name: Generate self-signed SSL certificate
-      command: >
-        openssl req -x509 -newkey rsa:2048 -nodes
-        -keyout ~/app/cert-data/localhost.key
-        -out ~/app/cert-data/localhost.crt
-        -days 365
-        -subj "/CN=localhost"
+# Create cert-data directory if it does not exist
+- name: Create cert-data directory
+  file:
+    path: ~/app/cert-data
+    state: directory
+    mode: '0755'
+  when: not cert_data_dir.stat.exists
+
+# Check if the SSL certificate file exists
+- name: Check if SSL certificate exists
+  stat:
+    path: ~/app/cert-data/localhost.crt
+  register: ssl_cert
+
+# Generate self-signed SSL certificate if it does not exist
+- name: Generate self-signed SSL certificate
+  command: >
+    openssl req -x509 -newkey rsa:2048 -nodes
+    -keyout ~/app/cert-data/localhost.key
+    -out ~/app/cert-data/localhost.crt
+    -days 365
+    -subj "/CN=localhost"
+  when: not ssl_cert.stat.exists
 
     # Run Docker Compose to start the application
     - name: Deploy application using Docker Compose
