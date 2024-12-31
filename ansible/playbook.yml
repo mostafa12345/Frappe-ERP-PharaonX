@@ -1,0 +1,105 @@
+---
+- name: Setup and Deploy Application
+  hosts: web_servers
+  become: yes
+
+  tasks:
+    # Update the package list
+    - name: Update apt package list
+      apt:
+        update_cache: yes
+
+    # Install prerequisites
+    - name: Install prerequisites
+      apt:
+        name:
+          - apt-transport-https
+          - ca-certificates
+          - curl
+          - software-properties-common
+        state: present
+
+    # Add Docker GPG key and repository
+    - name: Add Docker's GPG key
+      apt_key:
+        url: https://download.docker.com/linux/ubuntu/gpg
+        state: present
+
+    - name: Add Docker repository
+      apt_repository:
+        repo: "deb [arch=amd64] https://download.docker.com/linux/ubuntu $(lsb_release -cs) stable"
+        state: present
+
+    # Install Docker
+    - name: Install Docker
+      apt:
+        name: docker-ce
+        state: present
+
+    - name: Start Docker service
+      systemd:
+        name: docker
+        state: started
+        enabled: yes
+
+    # Add user to the Docker group
+    - name: Add current user to the Docker group
+      user:
+        name: "{{ ansible_user }}"  # Dynamically adds the user from inventory
+        groups: docker
+        append: yes
+
+    # Restart Docker service to apply group changes
+    - name: Restart Docker service
+      systemd:
+        name: docker
+        state: restarted
+
+    # Install Docker Compose
+    - name: Install Docker Compose
+      get_url:
+        url: https://github.com/docker/compose/releases/latest/download/docker-compose-linux-x86_64
+        dest: /usr/local/bin/docker-compose
+        mode: '0755'
+
+    # Create the application directory
+    - name: Create application directory
+      file:
+        path: ~/app  # Uses the home directory of the inventory user
+        state: directory
+        mode: '0755'
+
+    # Copy application files from Jenkins workspace
+    - name: Copy docker-compose file
+      copy:
+        src: ./docker-compose.yml
+        dest: ~/app/docker-compose.yml
+        mode: '0644'
+
+    - name: Copy nginx configuration
+      copy:
+        src: ./nginx.conf
+        dest: ~/app/nginx.conf
+        mode: '0644'
+
+    # Create cert-data directory
+    - name: Create cert-data directory
+      file:
+        path: ~/app/cert-data
+        state: directory
+        mode: '0755'
+
+    # Generate SSL certificates
+    - name: Generate self-signed SSL certificate
+      command: >
+        openssl req -x509 -newkey rsa:2048 -nodes
+        -keyout ~/app/cert-data/localhost.key
+        -out ~/app/cert-data/localhost.crt
+        -days 365
+        -subj "/CN=localhost"
+
+    # Run Docker Compose to start the application
+    - name: Deploy application using Docker Compose
+      command: docker-compose up -d
+      args:
+        chdir: ~/app
