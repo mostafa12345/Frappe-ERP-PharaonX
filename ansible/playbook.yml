@@ -63,9 +63,9 @@
         mode: '0755'
 
     # Create the application directory
-    - name: Create application directory
+    - name: Create application directory only if it doesn't exist
       file:
-        path: ~/app  # Uses the home directory of the inventory user
+        path: ~/frappe-docker  # Uses the home directory of the inventory user
         state: directory
         mode: '0755'
 
@@ -73,25 +73,25 @@
     - name: Copy docker-compose file
       copy:
         src: ./docker-compose.yml
-        dest: ~/app/docker-compose.yml
+        dest: ~/frappe-docker/docker-compose.yml
         mode: '0644'
 
     - name: Copy nginx configuration
       copy:
         src: ./nginx.conf
-        dest: ~/app/nginx.conf
+        dest: ~/frappe-docker/nginx.conf
         mode: '0644'
 
 # Check if the cert-data directory exists
     - name: Check if cert-data directory exists
       stat:
-        path: ~/app/cert-data
+        path: ~/frappe-docker/cert-data
       register: cert_data_dir
 
 # Create cert-data directory if it does not exist
     - name: Create cert-data directory
       file:
-        path: ~/app/cert-data
+        path: ~/frappe-docker/cert-data
         state: directory
         mode: '0755'
       when: not cert_data_dir.stat.exists
@@ -99,7 +99,7 @@
 # Check if the SSL certificate file exists
     - name: Check if SSL certificate exists
       stat:
-        path: ~/app/cert-data/localhost.crt
+        path: ~/frappe-docker/cert-data/localhost.crt
       register: ssl_cert
 
 # Generate self-signed SSL certificate if it does not exist
@@ -116,4 +116,4 @@
     - name: Deploy application using Docker Compose
       command: docker-compose up -d
       args:
-        chdir: ~/app
+        chdir: ~/frappe-docker
