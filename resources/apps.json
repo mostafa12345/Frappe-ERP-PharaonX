@@ -26,5 +26,21 @@
   {
     "url": "https://github.com/frappe/insights",
     "branch": "main"
+  },
+  {
+    "url": "https://github.com/frappe/education",
+    "branch": "develop"
+  },
+  {
+    "url": "https://github.com/frappe/helpdesk",
+    "branch": "develop"
+  },
+  {
+    "url": "https://github.com/frappe/lms",
+    "branch": "develop"
+  }
+   {
+    "url": "https://github.com/mostafa12345/frappe_education_lms_sync",
+    "branch": "main"
   }
 ]
