@@ -71,6 +71,13 @@ services:
         bench --site PharaonX install-app drive;
         bench --site PharaonX install-app frappe_whatsapp;
         bench --site PharaonX install-app raven;
+        bench --site PharaonX install-app insights;
+        bench --site PharaonX install-app education;
+        bench --site PharaonX install-app helpdesk;
+        bench --site PharaonX install-app payments;
+        bench --site PharaonX install-app modern_desk;
+        bench --site PharaonX install-app education_lms_sync; 
+        bench --site PharaonX install-app lms;
   db:
     image: mariadb:10.6
     healthcheck:
