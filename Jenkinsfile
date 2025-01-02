@@ -50,8 +50,7 @@ pipeline {
                         echo "Using inventory file:"
                         cat ${ANSIBLE_INVENTORY}
                         export ANSIBLE_PRIVATE_KEY_FILE=${SSH_KEY}
-                        cd ansible
-                        ansible-playbook -i ${ANSIBLE_INVENTORY} playbook.yml
+                        ansible-playbook -i ansible/inventory ansible/playbook.yml
                     """
                 }
             }
