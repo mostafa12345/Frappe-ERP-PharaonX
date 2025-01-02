@@ -4,8 +4,8 @@ pipeline {
     environment {
         DOCKER_IMAGE = 'mostafataha12/frappe'  // Docker image name
         DOCKER_TAG = 'test'  // Docker image tag (can be commit hash or version)
-        ANSIBLE_INVENTORY = 'inventory'  // Path to Ansible inventory file
-        SSH_KEY_PATH = '/path/to/your/ssh/key'  // SSH key path for Ansible
+        ANSIBLE_INVENTORY = 'ansible/inventory'  // Path to Ansible inventory file
+        
     }
 
     stages {
