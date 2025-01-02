@@ -58,9 +58,10 @@ pipeline {
                 script {
                     echo "Running Ansible to deploy updated docker-compose.yml..."
 
-                    // Run the Ansible playbook to deploy the app
+            steps {
+                sshagent(['ansible-ssh-key']) {
                     sh """
-                        ansible-playbook -i ${ANSIBLE_INVENTORY} --private-key ${SSH_KEY_PATH} playbook.yml
+                        ansible-playbook -i ${ANSIBLE_INVENTORY} playbook.yml
                     """
                 }
             }
