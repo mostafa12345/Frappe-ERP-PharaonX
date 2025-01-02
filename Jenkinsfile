@@ -3,7 +3,7 @@ pipeline {
 
     environment {
         DOCKER_IMAGE = 'mostafataha12/frappe'  // Docker image name
-        DOCKER_TAG = 'test'  // Docker image tag (can be commit hash or version)
+        DOCKER_TAG = 'modern-v8.1'  // Docker image tag (can be commit hash or version)
         ANSIBLE_INVENTORY = 'ansible/inventory'  // Path to Ansible inventory file
         
     }
