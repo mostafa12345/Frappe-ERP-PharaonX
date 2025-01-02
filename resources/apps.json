@@ -38,9 +38,13 @@
   {
     "url": "https://github.com/frappe/lms",
     "branch": "develop"
-  }
-   {
+  },
+  {
     "url": "https://github.com/mostafa12345/frappe_education_lms_sync",
+    "branch": "main"
+  },
+  {
+    "url": "https://github.com/mostafa12345/frappe-modern-desk",
     "branch": "main"
   }
 ]
