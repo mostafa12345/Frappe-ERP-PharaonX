@@ -61,6 +61,7 @@ pipeline {
             steps {
                 sshagent(['ansible-ssh-key']) {
                     sh """
+                        cd ansible
                         ansible-playbook -i ${ANSIBLE_INVENTORY} playbook.yml
                     """
                 }
