@@ -1,2 +1,2 @@
 [web_servers]
-192.168.50.7 ansible_user=test-2
+192.168.50.7 ansible_user=test-2 
