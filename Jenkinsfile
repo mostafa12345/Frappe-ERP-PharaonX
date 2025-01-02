@@ -5,7 +5,6 @@ pipeline {
         DOCKER_IMAGE = 'mostafataha12/frappe'  // Docker image name
         DOCKER_TAG = 'modern-v8.1'  // Docker image tag (can be commit hash or version)
         ANSIBLE_INVENTORY = 'ansible/inventory'  // Path to Ansible inventory file
-        
     }
 
     stages {
@@ -31,8 +30,6 @@ pipeline {
             }
         }
 
-
-
         stage('Update Docker Compose') {
             steps {
                 script {
@@ -45,17 +42,20 @@ pipeline {
                 }
             }
         }
-stage('Deploy with Ansible') {
-    steps {
-        withCredentials([sshUserPrivateKey(credentialsId: 'ansible-ssh-key', keyFileVariable: 'SSH_KEY')]) {
-            sh """
-                export ANSIBLE_PRIVATE_KEY_FILE=${SSH_KEY}
-                cd ansible
-                ansible-playbook -i ${ANSIBLE_INVENTORY} playbook.yml
-            """
+
+        stage('Deploy with Ansible') {
+            steps {
+                withCredentials([sshUserPrivateKey(credentialsId: 'ansible-ssh-key', keyFileVariable: 'SSH_KEY')]) {
+                    sh """
+                        export ANSIBLE_PRIVATE_KEY_FILE=${SSH_KEY}
+                        cd ansible
+                        ansible-playbook -i ${ANSIBLE_INVENTORY} playbook.yml
+                    """
+                }
+            }
         }
     }
-}
+
     post {
         always {
             // Cleanup actions or post-deployment steps (e.g., notifications, logs)
