@@ -31,14 +31,7 @@ pipeline {
             }
         }
 
-        stage('Approval') {
-            steps {
-                script {
-                    // Pause pipeline and wait for user approval before deploying
-                    input message: 'Do you want to proceed with deployment?', ok: 'Deploy'
-                }
-            }
-        }
+
 
         stage('Update Docker Compose') {
             steps {
