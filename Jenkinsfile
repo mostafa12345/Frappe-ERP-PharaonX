@@ -42,6 +42,7 @@ pipeline {
                 }
             }
         }
+
         stage('Deploy with Ansible') {
             steps {
                 withCredentials([sshUserPrivateKey(credentialsId: 'ansible-ssh-key', keyFileVariable: 'SSH_KEY')]) {
@@ -49,12 +50,14 @@ pipeline {
                         echo "Using inventory file:"
                         cat ${ANSIBLE_INVENTORY}
                         export ANSIBLE_PRIVATE_KEY_FILE=${SSH_KEY}
-                       cd ansible
-                       ansible-playbook -i ${ANSIBLE_INVENTORY} playbook.yml
+                        cd ansible
+                        ansible-playbook -i ${ANSIBLE_INVENTORY} playbook.yml
                     """
+                }
+            }
         }
     }
-}
+
     post {
         always {
             // Cleanup actions or post-deployment steps (e.g., notifications, logs)
@@ -62,4 +65,3 @@ pipeline {
         }
     }
 }
-
