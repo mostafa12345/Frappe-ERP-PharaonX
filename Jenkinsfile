@@ -55,10 +55,6 @@ pipeline {
 
         stage('Deploy with Ansible') {
             steps {
-                script {
-                    echo "Running Ansible to deploy updated docker-compose.yml..."
-
-            steps {
                 sshagent(['ansible-ssh-key']) {
                     sh """
                         cd ansible
