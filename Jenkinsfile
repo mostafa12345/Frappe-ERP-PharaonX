@@ -37,6 +37,7 @@ pipeline {
                     // Replace the image tag in docker-compose.yml with the new tag
                     sh """
                         sed -i 's|image: ${DOCKER_IMAGE}:.*|image: ${DOCKER_IMAGE}:${DOCKER_TAG}|g' ${WORKSPACE}/docker-compose.yml
+                        cat ${WORKSPACE}/docker-compose.yml
                     """
                     
                 }
