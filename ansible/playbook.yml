@@ -77,7 +77,7 @@
     # Add Docker repository only if not already configured
     - name: Add Docker repository
       apt_repository:
-        repo: "deb [arch=amd64 signed-by=/etc/apt/keyrings/docker.gpg] https://download.docker.com/linux/ubuntu $(lsb_release -cs) stable"
+        repo: "deb [arch=amd64 signed-by=/etc/apt/keyrings/docker.gpg] https://download.docker.com/linux/ubuntu {{ ubuntu_codename.stdout }} stable"
         state: present
       when: docker_repo_check.rc != 0
 
