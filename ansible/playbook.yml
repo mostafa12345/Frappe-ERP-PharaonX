@@ -107,7 +107,7 @@
     # Create application directory only if it doesn't exist
     - name: Create application directory only if it doesn't exist
       file:
-        path: ~/frappe-docker  # Uses the home directory of the inventory user
+        path: /home/test-2/frappe-docker  # Uses the home directory of the inventory user
         state: directory
         mode: '0755'
 
@@ -115,19 +115,19 @@
     - name: Copy docker-compose file
       copy:
         src: "/var/jenkins_home/workspace/ERP-NEXT_main/docker-compose.yml"
-        dest: ~/frappe-docker/docker-compose.yml
+        dest: /home/test-2/frappe-docker/docker-compose.yml
         mode: '0644'
 
     - name: Copy nginx configuration
       copy:
         src: "/var/jenkins_home/workspace/ERP-NEXT_main/nginx.conf"
-        dest: ~/frappe-docker/nginx.conf
+        dest: /home/test-2/frappe-docker/nginx.conf
         mode: '0644'
 
     # Check if the cert-data directory exists
     - name: Check if cert-data directory exists
       stat:
-        path: ~/frappe-docker/cert-data
+        path: /home/test-2/frappe-docker/cert-data
       register: cert_data_dir
 
     # Create cert-data directory if it does not exist
@@ -141,7 +141,7 @@
     # Check if SSL certificate exists
     - name: Check if SSL certificate exists
       stat:
-        path: ~/frappe-docker/cert-data/localhost.crt
+        path: /home/test-2/frappe-docker/cert-data/localhost.crt
       register: ssl_cert
 
     # Generate self-signed SSL certificate if it does not exist
@@ -158,4 +158,4 @@
     - name: Deploy application using Docker Compose
       command: docker-compose up -d
       args:
-        chdir: ~/frappe-docker
+        chdir: /home/test-2/frappe-docker
