@@ -107,7 +107,7 @@
     # Create application directory only if it doesn't exist
     - name: Create application directory only if it doesn't exist
       file:
-        path: /home/test-2/frappe-docker  # Uses the home directory of the inventory user
+        path: /home/{{ ansible_user }}/frappe-docker  # Uses the home directory of the inventory user
         state: directory
         mode: '0755'
 
