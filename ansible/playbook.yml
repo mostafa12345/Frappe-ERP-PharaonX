@@ -120,7 +120,7 @@
 
     - name: Copy nginx configuration
       copy:
-        src: ./nginx.conf
+        src: "/var/jenkins_home/workspace/ERP-NEXT_main/nginx.conf"
         dest: ~/frappe-docker/nginx.conf
         mode: '0644'
 
