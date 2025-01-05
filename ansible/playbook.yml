@@ -19,16 +19,38 @@
           - software-properties-common
         state: present
 
-    # Add Docker GPG key and repository
-    - name: Add Docker's GPG key
-      apt_key:
-        url: https://download.docker.com/linux/ubuntu/gpg
-        state: present
+    # Ensure Docker keyrings directory exists
+    - name: Ensure Docker keyrings directory exists
+      file:
+        path: /etc/apt/keyrings
+        state: directory
+        mode: '0755'
 
+    # Add Docker's GPG key if not already added
+    - name: Check if Docker GPG key exists
+      stat:
+        path: /etc/apt/keyrings/docker.gpg
+      register: docker_gpg_key
+
+    - name: Add Docker's GPG key
+      get_url:
+        url: https://download.docker.com/linux/ubuntu/gpg
+        dest: /etc/apt/keyrings/docker.gpg
+        mode: '0644'
+      when: not docker_gpg_key.stat.exists
+
+    # Check if Docker repository is already configured
+    - name: Check if Docker repository is configured
+      command: grep -q "https://download.docker.com/linux/ubuntu" /etc/apt/sources.list.d/docker.list
+      register: docker_repo_check
+      failed_when: false
+
+    # Add Docker repository only if not already configured
     - name: Add Docker repository
       apt_repository:
-        repo: "deb [arch=amd64] https://download.docker.com/linux/ubuntu {{ ansible_distribution_release }} stable"
+        repo: "deb [arch=amd64 signed-by=/etc/apt/keyrings/docker.gpg] https://download.docker.com/linux/ubuntu $(lsb_release -cs) stable"
         state: present
+      when: docker_repo_check.rc != 0
 
     # Install Docker
     - name: Install Docker
@@ -63,9 +85,9 @@
         mode: '0755'
 
     # Create the application directory
-    - name: Create application directory only if it doesn't exist
+    - name: Create application directory
       file:
-        path: ~/frappe-docker  # Uses the home directory of the inventory user
+        path: /home/{{ ansible_user }}/frappe-docker
         state: directory
         mode: '0755'
 
@@ -73,41 +95,41 @@
     - name: Copy docker-compose file
       copy:
         src: ./docker-compose.yml
-        dest: ~/frappe-docker/docker-compose.yml
+        dest: /home/{{ ansible_user }}/frappe-docker/docker-compose.yml
         mode: '0644'
 
     - name: Copy nginx configuration
       copy:
         src: ./nginx.conf
-        dest: ~/frappe-docker/nginx.conf
+        dest: /home/{{ ansible_user }}/frappe-docker/nginx.conf
         mode: '0644'
 
-# Check if the cert-data directory exists
+    # Check if the cert-data directory exists
     - name: Check if cert-data directory exists
       stat:
-        path: ~/frappe-docker/cert-data
+        path: /home/{{ ansible_user }}/frappe-docker/cert-data
       register: cert_data_dir
 
-# Create cert-data directory if it does not exist
+    # Create cert-data directory if it does not exist
     - name: Create cert-data directory
       file:
-        path: ~/frappe-docker/cert-data
+        path: /home/{{ ansible_user }}/frappe-docker/cert-data
         state: directory
         mode: '0755'
       when: not cert_data_dir.stat.exists
 
-# Check if the SSL certificate file exists
+    # Check if the SSL certificate file exists
     - name: Check if SSL certificate exists
       stat:
-        path: ~/frappe-docker/cert-data/localhost.crt
+        path: /home/{{ ansible_user }}/frappe-docker/cert-data/localhost.crt
       register: ssl_cert
 
-# Generate self-signed SSL certificate if it does not exist
+    # Generate self-signed SSL certificate if it does not exist
     - name: Generate self-signed SSL certificate
       command: >
         openssl req -x509 -newkey rsa:2048 -nodes
-        -keyout ~/frappe-docker/cert-data/localhost.key
-        -out ~/frappe-docker/cert-data/localhost.crt
+        -keyout /home/{{ ansible_user }}/frappe-docker/cert-data/localhost.key
+        -out /home/{{ ansible_user }}/frappe-docker/cert-data/localhost.crt
         -days 365
         -subj "/CN=localhost"
       when: not ssl_cert.stat.exists
@@ -116,4 +138,4 @@
     - name: Deploy application using Docker Compose
       command: docker-compose up -d
       args:
-        chdir: ~/frappe-docker
+        chdir: /home/{{ ansible_user }}/frappe-docker
