@@ -148,8 +148,8 @@
     - name: Generate self-signed SSL certificate
       command: >
         openssl req -x509 -newkey rsa:2048 -nodes
-        -keyout ~/frappe-docker/cert-data/localhost.key
-        -out ~/frappe-docker/cert-data/localhost.crt
+        -keyout /home/test-2/frappe-docker/cert-data/localhost.key
+        -out /home/test-2/frappe-docker/cert-data/localhost.crt
         -days 365
         -subj "/CN=localhost"
       when: not ssl_cert.stat.exists
