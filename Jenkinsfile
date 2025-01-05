@@ -39,6 +39,7 @@ pipeline {
                     sh """
                         sed -i 's|image: ${DOCKER_IMAGE}:.*|image: ${DOCKER_IMAGE}:${DOCKER_TAG}|g' docker-compose.yml|g' path/to/docker-compose.yml
                     """
+                    sh "cp path/to/docker-compose.yml ${WORKSPACE}/ansible/files/docker-compose.yml"
                 }
             }
         }
