@@ -114,7 +114,7 @@
     # Copy application files from Jenkins workspace
     - name: Copy docker-compose file
       copy:
-        src: ${WORKSPACE}/docker-compose.yml
+        src: "{{ docker_compose_path }}"
         dest: ~/frappe-docker/docker-compose.yml
         mode: '0644'
 
