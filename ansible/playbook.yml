@@ -114,7 +114,7 @@
     # Copy application files from Jenkins workspace
     - name: Copy docker-compose file
       copy:
-        src: "{{ docker_compose_path }}"
+        src: "/var/jenkins_home/workspace/ERP-NEXT_main/docker-compose.yml"
         dest: ~/frappe-docker/docker-compose.yml
         mode: '0644'
 
