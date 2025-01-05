@@ -45,13 +45,13 @@ pipeline {
 
         stage('Deploy with Ansible') {
             steps {
-                withCredentials([sshUserPrivateKey(credentialsId: 'ansible-ssh-key', keyFileVariable: 'SSH_KEY')]) {
+                withCredentials([usernamePassword(credentialsId: 'ansible-ssh-key', usernameVariable: 'SSH_USER', passwordVariable: 'SSH_PASSWORD')]) {
                     sh """
                         echo "Using inventory file:"
                         cat ${ANSIBLE_INVENTORY}
                         export ANSIBLE_HOST_KEY_CHECKING=False
-                        export ANSIBLE_PRIVATE_KEY_FILE=${SSH_KEY}
-                        ansible-playbook -i ansible/inventory ansible/playbook.yml
+                        export ANSIBLE_PASSWORD="${SSH_PASSWORD}"
+                        ansible-playbook -i ansible/inventory ansible/playbook.yml --user=${SSH_USER} --ask-pass || { echo "Ansible playbook failed"; exit 1; }
                     """
                 }
             }
