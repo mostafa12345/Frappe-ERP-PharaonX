@@ -74,6 +74,9 @@
       register: docker_repo_check
       failed_when: false
 
+    - name: Get Ubuntu codename
+      command: lsb_release -cs
+      register: ubuntu_codename
     # Add Docker repository only if not already configured
     - name: Add Docker repository
       apt_repository:
