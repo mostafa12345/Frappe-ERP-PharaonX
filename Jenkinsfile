@@ -36,9 +36,9 @@ pipeline {
                      echo "Updating docker-compose.yml with the new image tag..."
                     // Replace the image tag in docker-compose.yml with the new tag
                     sh """
-                        sed -i 's|image: ${DOCKER_IMAGE}:.*|image: ${DOCKER_IMAGE}:${DOCKER_TAG}|g' path/to/docker-compose.yml
+                        sed -i 's|image: ${DOCKER_IMAGE}:.*|image: ${DOCKER_IMAGE}:${DOCKER_TAG}|g' ${WORKSPACE}/ansible/files/docker-compose.yml
                     """
-                    sh "cp path/to/docker-compose.yml ${WORKSPACE}/ansible/files/docker-compose.yml"
+                    
                 }
             }
         }
