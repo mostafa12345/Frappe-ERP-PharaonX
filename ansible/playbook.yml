@@ -4,6 +4,35 @@
   become: yes
 
   tasks:
+    # Check if Docker is installed
+    - name: Check if Docker is installed
+      shell: docker --version
+      register: docker_installed
+      failed_when: false
+      changed_when: false
+
+    # Check if Docker Compose is installed
+    - name: Check if Docker Compose is installed
+      shell: docker-compose --version
+      register: docker_compose_installed
+      failed_when: false
+      changed_when: false
+
+    # Install Docker if not installed
+    - name: Install Docker
+      apt:
+        name: docker-ce
+        state: present
+      when: docker_installed.rc != 0
+
+    # Install Docker Compose if not installed
+    - name: Install Docker Compose
+      get_url:
+        url: https://github.com/docker/compose/releases/latest/download/docker-compose-linux-x86_64
+        dest: /usr/local/bin/docker-compose
+        mode: '0755'
+      when: docker_compose_installed.rc != 0
+
     # Update the package list
     - name: Update apt package list
       apt:
@@ -52,12 +81,7 @@
         state: present
       when: docker_repo_check.rc != 0
 
-    # Install Docker
-    - name: Install Docker
-      apt:
-        name: docker-ce
-        state: present
-
+    # Start Docker service
     - name: Start Docker service
       systemd:
         name: docker
@@ -77,17 +101,10 @@
         name: docker
         state: restarted
 
-    # Install Docker Compose
-    - name: Install Docker Compose
-      get_url:
-        url: https://github.com/docker/compose/releases/latest/download/docker-compose-linux-x86_64
-        dest: /usr/local/bin/docker-compose
-        mode: '0755'
-
-    # Create the application directory
-    - name: Create application directory
+    # Create application directory only if it doesn't exist
+    - name: Create application directory only if it doesn't exist
       file:
-        path: /home/{{ ansible_user }}/frappe-docker
+        path: ~/frappe-docker  # Uses the home directory of the inventory user
         state: directory
         mode: '0755'
 
@@ -95,41 +112,41 @@
     - name: Copy docker-compose file
       copy:
         src: ./docker-compose.yml
-        dest: /home/{{ ansible_user }}/frappe-docker/docker-compose.yml
+        dest: ~/frappe-docker/docker-compose.yml
         mode: '0644'
 
     - name: Copy nginx configuration
       copy:
         src: ./nginx.conf
-        dest: /home/{{ ansible_user }}/frappe-docker/nginx.conf
+        dest: ~/frappe-docker/nginx.conf
         mode: '0644'
 
     # Check if the cert-data directory exists
     - name: Check if cert-data directory exists
       stat:
-        path: /home/{{ ansible_user }}/frappe-docker/cert-data
+        path: ~/frappe-docker/cert-data
       register: cert_data_dir
 
     # Create cert-data directory if it does not exist
     - name: Create cert-data directory
       file:
-        path: /home/{{ ansible_user }}/frappe-docker/cert-data
+        path: ~/frappe-docker/cert-data
         state: directory
         mode: '0755'
       when: not cert_data_dir.stat.exists
 
-    # Check if the SSL certificate file exists
+    # Check if SSL certificate exists
     - name: Check if SSL certificate exists
       stat:
-        path: /home/{{ ansible_user }}/frappe-docker/cert-data/localhost.crt
+        path: ~/frappe-docker/cert-data/localhost.crt
       register: ssl_cert
 
     # Generate self-signed SSL certificate if it does not exist
     - name: Generate self-signed SSL certificate
       command: >
         openssl req -x509 -newkey rsa:2048 -nodes
-        -keyout /home/{{ ansible_user }}/frappe-docker/cert-data/localhost.key
-        -out /home/{{ ansible_user }}/frappe-docker/cert-data/localhost.crt
+        -keyout ~/frappe-docker/cert-data/localhost.key
+        -out ~/frappe-docker/cert-data/localhost.crt
         -days 365
         -subj "/CN=localhost"
       when: not ssl_cert.stat.exists
@@ -138,4 +155,4 @@
     - name: Deploy application using Docker Compose
       command: docker-compose up -d
       args:
-        chdir: /home/{{ ansible_user }}/frappe-docker
+        chdir: ~/frappe-docker
