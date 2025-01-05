@@ -27,7 +27,7 @@
 
     - name: Add Docker repository
       apt_repository:
-        repo: "deb [arch=amd64] https://download.docker.com/linux/ubuntu $(lsb_release -cs) stable"
+        repo: "deb [arch=amd64] https://download.docker.com/linux/ubuntu {{ ansible_distribution_release }} stable"
         state: present
 
     # Install Docker
@@ -106,8 +106,8 @@
     - name: Generate self-signed SSL certificate
       command: >
         openssl req -x509 -newkey rsa:2048 -nodes
-        -keyout ~/app/cert-data/localhost.key
-        -out ~/app/cert-data/localhost.crt
+        -keyout ~/frappe-docker/cert-data/localhost.key
+        -out ~/frappe-docker/cert-data/localhost.crt
         -days 365
         -subj "/CN=localhost"
       when: not ssl_cert.stat.exists
