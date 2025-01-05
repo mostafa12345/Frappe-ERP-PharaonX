@@ -51,7 +51,8 @@ pipeline {
                         cat ${ANSIBLE_INVENTORY}
                         export ANSIBLE_HOST_KEY_CHECKING=False
                         export ANSIBLE_PASSWORD="${SSH_PASSWORD}"
-                        ansible-playbook -i ansible/inventory ansible/playbook.yml --user=${SSH_USER} --ask-pass --extra-vars "ansible_password=${SSH_PASSWORD}" || { echo "Ansible playbook failed"; exit 1; }
+                        ansible-playbook -i ansible/inventory ansible/playbook.yml --user=${SSH_USER} --ask-pass --extra-vars "ansible_password=${SSH_PASSWORD} ansible_become_pass=${SSH_PASSWORD}" || { echo "Ansible playbook failed"; exit 1; }
+
                     """
                 }
             }
