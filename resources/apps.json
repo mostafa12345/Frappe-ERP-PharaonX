@@ -46,5 +46,9 @@
   {
     "url": "https://github.com/mostafa12345/frappe-modern-desk",
     "branch": "main"
+  },
+  {
+    "url": "https://github.com/mostafa12345/custom_frappe",
+    "branch": "main"
   }
 ]
