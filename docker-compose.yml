@@ -79,6 +79,7 @@ services:
         bench --site PharaonX install-app education_lms_sync; 
         bench --site PharaonX install-app lms;
         bench --site PharaonX install-app custom_frappe;
+        bench --site PharaonX install-app customer_drive_integration ;
   db:
     image: mariadb:10.6
     healthcheck:
